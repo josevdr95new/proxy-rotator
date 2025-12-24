@@ -3,74 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba de ProxyRotator</title>
+    <title>ProxyRotator.js - Demostración en Vivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; background: #f4f4f9; color: #333; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { margin-top: 0; color: #2c3e50; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem; }
-        input, select, button { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { background: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:hover { background: #2980b9; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            margin-top: 2rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #console {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 1.5rem;
+            border-radius: 8px;
+            height: 350px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            white-space: pre-wrap;
+            border: 1px solid #333;
+        }
+        .log-error { color: #e06c75; }
+        .log-success { color: #98c379; }
+        .log-info { color: #61afef; }
+        .log-warn { color: #e5c07b; }
         
-        #console { background: #2d3436; color: #00cec9; padding: 1rem; border-radius: 6px; height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; }
-        .log-error { color: #ff7675; }
-        .log-success { color: #55efc4; }
-        .log-info { color: #74b9ff; }
+        .section { margin-top: 3rem; }
+        .section h2 { border-bottom: 2px solid #3498db; padding-bottom: 0.5rem; color: #2c3e50; }
+        code {
+            background: #e8e8e8;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+            color: #7f8c8d;
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h1>📡 ProxyRotator Tester</h1>
-    <p>Configura y prueba la librería en tiempo real.</p>
+<div class="container">
+    <header class="header">
+        <h1>ProxyRotator.js</h1>
+        <p>Utilidad para peticiones HTTP resilientes a través de proxies públicos.</p>
+    </header>
 
-    <div class="grid">
-        <div>
-            <label>URL Objetivo</label>
-            <input type="text" id="targetUrl" value="https://httpbin.org/ip" placeholder="https://...">
+    <div class="card">
+        <h2>🚀 Demostración en Vivo</h2>
+        <p>Configura y prueba la librería en tiempo real.</p>
+
+        <div class="grid">
+            <div>
+                <label for="targetUrl">URL Objetivo</label>
+                <input type="text" id="targetUrl" value="https://httpbin.org/ip" placeholder="https://...">
+            </div>
+            <div>
+                <label for="timeout">Timeout (ms)</label>
+                <input type="number" id="timeout" value="5000">
+            </div>
         </div>
-        <div>
-            <label>Timeout (ms)</label>
-            <input type="number" id="timeout" value="5000">
+
+        <div class="grid">
+            <div>
+                <label for="retries">Intentos (Retries)</label>
+                <input type="number" id="retries" value="3">
+            </div>
+            <div>
+                <label for="proxyIndex">Proxy Fijo (Opcional)</label>
+                <select id="proxyIndex">
+                    <option value="-1">🔄 Rotación Automática</option>
+                    <option value="0">Proxy 0 (CorsProxy.io)</option>
+                    <option value="1">Proxy 1 (AllOrigins)</option>
+                    <option value="2">Proxy 2 (CodeTabs)</option>
+                    <option value="3">Proxy 3 (ThingProxy)</option>
+                    <option value="4">Proxy 4 (CorsProxy.org)</option>
+                </select>
+            </div>
         </div>
+
+        <button id="btnTest" onclick="runTest()">Ejecutar Petición</button>
+
+        <div id="console">Esperando acción...</div>
     </div>
 
-    <div class="grid">
-        <div>
-            <label>Intentos (Retries)</label>
-            <input type="number" id="retries" value="3">
-        </div>
-        <div>
-            <label>Proxy Fijo (Opcional)</label>
-            <select id="proxyIndex">
-                <option value="-1">🔄 Rotación Automática</option>
-                <option value="0">Proxy 0 (CorsProxy.io)</option>
-                <option value="1">Proxy 1 (AllOrigins)</option>
-                <option value="2">Proxy 2 (CodeTabs)</option>
-                <option value="3">Proxy 3 (ThingProxy)</option>
-            </select>
-        </div>
+    <div class="section" id="how-to-use">
+        <h2>📋 Cómo Usar</h2>
+        <p>Incluye el script en tu HTML y estarás listo para usarlo.</p>
+        <pre><code>&lt;script src="https://josevdr95new.github.io/proxy-rotator/proxy-rotator.js"&gt;&lt;/script&gt;</code></pre>
+        <p>Luego, crea una instancia y realiza una petición:</p>
+        <pre><code>const rotator = new ProxyRotator({
+    retries: 3,
+    timeout: 5000,
+    debug: true
+});
+
+rotator.getJSON('https://api.example.com/data')
+    .then(data => console.log('Datos recibidos:', data))
+    .catch(error => console.error('Fallo la petición:', error));</code></pre>
     </div>
 
-    <button id="btnTest" onclick="runTest()">🚀 Ejecutar Petición</button>
+    <div class="section" id="features">
+        <h2>✨ Características</h2>
+        <ul>
+            <li><strong>Rotación Automática de Proxies:</strong> Si una petición falla, intenta automáticamente con el siguiente proxy de la lista.</li>
+            <li><strong>Reintentos Configurables:</strong> Define cuántas veces debe reintentar la petición antes de rendirse.</li>
+            <li><strong>Timeout por Petición:</strong> Evita que las peticiones se queden colgadas indefinidamente.</li>
+            <li><strong>Modo de Proxy Fijo:</strong> Opción para usar un único proxy específico para todas las peticiones.</li>
+            <li><strong>Helpers para JSON y Texto:</strong> Métodos convenientes como <code>.getJSON()</code> y <code>.getText()</code>.</li>
+            <li><strong>Modo Debug:</strong> Activa logs en consola para ver qué está pasando internamente.</li>
+        </ul>
+    </div>
 
-    <div id="console">Esperando acción...</div>
+    <div class="section" id="configuration">
+        <h2>🛠️ Configuración</h2>
+        <p>Puedes pasar un objeto de opciones al constructor <code>new ProxyRotator(options)</code>:</p>
+        <ul>
+            <li><code>proxies</code> (Array): Una lista de URLs de proxies para usar. Por defecto, usa una lista interna.</li>
+            <li><code>timeout</code> (Number): Tiempo en milisegundos para esperar por cada petición. Default: <code>5000</code>.</li>
+            <li><code>retries</code> (Number): Número total de intentos. Default: <code>3</code>.</li>
+            <li><code>useProxyIndex</code> (Number): Fija la librería a usar un solo proxy por su índice. Default: <code>null</code> (desactivado).</li>
+            <li><code>debug</code> (Boolean): Activa o desactiva los logs de depuración. Default: <code>false</code>.</li>
+        </ul>
+    </div>
+
+    <div class="section" id="license">
+        <h2>📜 Licencia</h2>
+        <p>Este proyecto está bajo la Licencia MIT. Eres libre de usarlo, modificarlo y distribuirlo.</p>
+    </div>
 </div>
+
+<footer>
+    <p>&copy; 2024 ProxyRotator.js</p>
+</footer>
 
 <script src="proxy-rotator.js"></script>
 
 <script>
-    // Utilidad para imprimir en el "div consola"
+    const consoleBox = document.getElementById('console');
+
     function log(msg, type = 'info') {
-        const box = document.getElementById('console');
         const line = document.createElement('div');
-        line.textContent = `> ${msg}`;
+        const timestamp = new Date().toLocaleTimeString();
+        line.textContent = `[${timestamp}] ${msg}`;
         line.className = `log-${type}`;
-        box.appendChild(line);
-        box.scrollTop = box.scrollHeight;
+        consoleBox.appendChild(line);
+        consoleBox.scrollTop = consoleBox.scrollHeight;
     }
 
     async function runTest() {
@@ -80,19 +238,19 @@
         const retries = parseInt(document.getElementById('retries').value);
         const proxyIndexVal = parseInt(document.getElementById('proxyIndex').value);
         
-        // Limpiar consola
-        document.getElementById('console').innerHTML = '';
+        consoleBox.innerHTML = '';
         btn.disabled = true;
         btn.textContent = '⏳ Cargando...';
 
-        // 1. Configurar la Instancia
         const config = {
             timeout: timeout,
             retries: retries,
-            debug: true // Activamos debug para ver logs en la consola del navegador también
+            debug: true,
+            _log: (msg, type) => { // Custom logger para la consola visual
+                log(msg, type);
+            }
         };
 
-        // Si el usuario eligió un proxy específico
         if (proxyIndexVal !== -1) {
             config.useProxyIndex = proxyIndexVal;
             log(`Modo: Proxy Fijo [Índice ${proxyIndexVal}]`, 'info');
@@ -102,14 +260,13 @@
 
         const rotator = new ProxyRotator(config);
 
+        // Sobreescribir el logger interno para que imprima en nuestra consola visual
+        rotator._log = (msg, type) => log(msg, type);
+
         try {
-            log(`Iniciando petición a: ${url}...`, 'info');
-            
-            // 2. Usamos el helper getJSON (o getText si prefieres)
-            // Medimos tiempo
+            log(`Iniciando petición a: ${url}`, 'info');
             const start = performance.now();
             
-            // Hacemos la llamada (detectamos si es JSON o texto simple para mostrarlo bonito)
             const response = await rotator.fetch(url);
             const textData = await response.text();
             
@@ -117,13 +274,22 @@
             
             log(`✅ Petición exitosa en ${time}ms`, 'success');
             log(`📦 Respuesta (primeros 500 chars):`, 'success');
-            log(textData.substring(0, 500), 'white');
+
+            try {
+                // Intenta mostrar como JSON si es posible
+                const jsonData = JSON.parse(textData);
+                const formattedJson = JSON.stringify(jsonData, null, 2);
+                log(formattedJson, 'white');
+            } catch {
+                // Si no, como texto plano
+                log(textData.substring(0, 500), 'white');
+            }
 
         } catch (error) {
             log(`❌ Error Final: ${error.message}`, 'error');
         } finally {
             btn.disabled = false;
-            btn.textContent = '🚀 Ejecutar Petición';
+            btn.textContent = 'Ejecutar Petición';
         }
     }
 </script>
