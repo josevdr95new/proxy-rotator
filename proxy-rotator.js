@@ -11,7 +11,7 @@ class ProxyRotator {
             'https://api.allorigins.win/raw?url=',
             'https://api.codetabs.com/v1/proxy?quest=',
             'https://thingproxy.freeboard.io/fetch/',
-            'https://corsproxy.org/'
+            'https://corsproxy.org/',
             'https://test.cors.workers.dev/'
         ];
 
