@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de ProxyRotator</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; background: #f4f4f9; color: #333; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { margin-top: 0; color: #2c3e50; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem; }
+        input, select, button { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { background: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { background: #2980b9; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        
+        #console { background: #2d3436; color: #00cec9; padding: 1rem; border-radius: 6px; height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; }
+        .log-error { color: #ff7675; }
+        .log-success { color: #55efc4; }
+        .log-info { color: #74b9ff; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>📡 ProxyRotator Tester</h1>
+    <p>Configura y prueba la librería en tiempo real.</p>
+
+    <div class="grid">
+        <div>
+            <label>URL Objetivo</label>
+            <input type="text" id="targetUrl" value="https://httpbin.org/ip" placeholder="https://...">
+        </div>
+        <div>
+            <label>Timeout (ms)</label>
+            <input type="number" id="timeout" value="5000">
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <label>Intentos (Retries)</label>
+            <input type="number" id="retries" value="3">
+        </div>
+        <div>
+            <label>Proxy Fijo (Opcional)</label>
+            <select id="proxyIndex">
+                <option value="-1">🔄 Rotación Automática</option>
+                <option value="0">Proxy 0 (CorsProxy.io)</option>
+                <option value="1">Proxy 1 (AllOrigins)</option>
+                <option value="2">Proxy 2 (CodeTabs)</option>
+                <option value="3">Proxy 3 (ThingProxy)</option>
+            </select>
+        </div>
+    </div>
+
+    <button id="btnTest" onclick="runTest()">🚀 Ejecutar Petición</button>
+
+    <div id="console">Esperando acción...</div>
+</div>
+
+<script src="proxy-rotator.js"></script>
+
+<script>
+    // Utilidad para imprimir en el "div consola"
+    function log(msg, type = 'info') {
+        const box = document.getElementById('console');
+        const line = document.createElement('div');
+        line.textContent = `> ${msg}`;
+        line.className = `log-${type}`;
+        box.appendChild(line);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function runTest() {
+        const btn = document.getElementById('btnTest');
+        const url = document.getElementById('targetUrl').value;
+        const timeout = parseInt(document.getElementById('timeout').value);
+        const retries = parseInt(document.getElementById('retries').value);
+        const proxyIndexVal = parseInt(document.getElementById('proxyIndex').value);
+        
+        // Limpiar consola
+        document.getElementById('console').innerHTML = '';
+        btn.disabled = true;
+        btn.textContent = '⏳ Cargando...';
+
+        // 1. Configurar la Instancia
+        const config = {
+            timeout: timeout,
+            retries: retries,
+            debug: true // Activamos debug para ver logs en la consola del navegador también
+        };
+
+        // Si el usuario eligió un proxy específico
+        if (proxyIndexVal !== -1) {
+            config.useProxyIndex = proxyIndexVal;
+            log(`Modo: Proxy Fijo [Índice ${proxyIndexVal}]`, 'info');
+        } else {
+            log(`Modo: Rotación Automática`, 'info');
+        }
+
+        const rotator = new ProxyRotator(config);
+
+        try {
+            log(`Iniciando petición a: ${url}...`, 'info');
+            
+            // 2. Usamos el helper getJSON (o getText si prefieres)
+            // Medimos tiempo
+            const start = performance.now();
+            
+            // Hacemos la llamada (detectamos si es JSON o texto simple para mostrarlo bonito)
+            const response = await rotator.fetch(url);
+            const textData = await response.text();
+            
+            const time = Math.round(performance.now() - start);
+            
+            log(`✅ Petición exitosa en ${time}ms`, 'success');
+            log(`📦 Respuesta (primeros 500 chars):`, 'success');
+            log(textData.substring(0, 500), 'white');
+
+        } catch (error) {
+            log(`❌ Error Final: ${error.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '🚀 Ejecutar Petición';
+        }
+    }
+</script>
+
+</body>
+</html>
